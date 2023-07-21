@@ -1,18 +1,19 @@
 import { Body, Controller, Inject, Post } from "@nestjs/common";
 import { ClientProxy, MessagePattern, Payload } from "@nestjs/microservices";
 import { RMQ_SERVICE } from "./tokens";
+import { CreateQueryDto } from "./create-query.dto";
 
 @Controller()
 export class AppController {
   constructor(@Inject(RMQ_SERVICE) private readonly client: ClientProxy) {}
 
-  @Post("send")
-  send(@Body() { message }: any) {
-    this.client.emit("message", { message, createdAt: Date.now() });
+  @Post("query")
+  send(@Body() createQueryDto: CreateQueryDto) {
+    this.client.emit("create-query", createQueryDto);
   }
 
-  @MessagePattern("message")
-  handleMessage(@Payload() data: string) {
-    console.log("received", data);
+  @MessagePattern("create-query")
+  handleMessage(@Payload() createQueryDto: CreateQueryDto) {
+    console.log("received", createQueryDto);
   }
 }
