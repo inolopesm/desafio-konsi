@@ -1,21 +1,26 @@
 import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ClientProxyFactory, Transport } from "@nestjs/microservices";
 import { AppController } from "./app.controller";
-import { ClientsModule, Transport } from "@nestjs/microservices";
 import { RMQ_SERVICE } from "./tokens";
 
 @Module({
-  imports: [
-    ClientsModule.register([
-      {
-        name: RMQ_SERVICE,
-        transport: Transport.RMQ,
-        options: {
-          urls: ["amqp://localhost"],
-          queue: "default_queue",
-          queueOptions: { durable: false },
-        },
+  imports: [ConfigModule.forRoot({ isGlobal: true })],
+  providers: [
+    {
+      provide: RMQ_SERVICE,
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return ClientProxyFactory.create({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.getOrThrow("RMQ_URL")],
+            queue: configService.getOrThrow("RMQ_QUEUE"),
+            queueOptions: { durable: false },
+          },
+        });
       },
-    ]),
+    },
   ],
   controllers: [AppController],
 })
