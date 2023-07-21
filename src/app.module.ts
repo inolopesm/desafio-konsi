@@ -1,12 +1,13 @@
 import { Module } from "@nestjs/common";
+import { AppController } from "./app.controller";
 import { ClientsModule, Transport } from "@nestjs/microservices";
-import { HttpController } from "./http.controller";
+import { RMQ_SERVICE } from "./tokens";
 
 @Module({
   imports: [
     ClientsModule.register([
       {
-        name: "RMQ_SERVICE",
+        name: RMQ_SERVICE,
         transport: Transport.RMQ,
         options: {
           urls: ["amqp://localhost"],
@@ -16,6 +17,6 @@ import { HttpController } from "./http.controller";
       },
     ]),
   ],
-  controllers: [HttpController],
+  controllers: [AppController],
 })
-export class HttpModule {}
+export class AppModule {}
