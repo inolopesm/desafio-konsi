@@ -1,67 +1,51 @@
-import { Body, Controller, Inject, Post } from "@nestjs/common";
+import { randomUUID } from "node:crypto";
+import { Body, Controller, Inject, Logger, Post } from "@nestjs/common";
 import { ClientProxy, MessagePattern, Payload } from "@nestjs/microservices";
-import puppeteer, { TimeoutError } from "puppeteer";
 import { RMQ_SERVICE } from "./tokens";
 import { CreateQueryDto } from "./create-query.dto";
+import { BeneficiosProvider } from "./beneficios/beneficios.provider";
 
 @Controller()
 export class AppController {
-  constructor(@Inject(RMQ_SERVICE) private readonly client: ClientProxy) {}
+  private readonly logger = new Logger(AppController.name);
+
+  constructor(
+    @Inject(RMQ_SERVICE) private readonly client: ClientProxy,
+    private readonly beneficiosProvider: BeneficiosProvider
+  ) {}
 
   @Post("query")
   send(@Body() createQueryDto: CreateQueryDto) {
-    this.client.emit("create-query", createQueryDto);
+    const id = randomUUID();
+    const data = { ...createQueryDto, id };
+    this.client.emit("create-query", data);
+
+    this.logger.log(
+      `${id} Sended to create-query queue the data ${JSON.stringify(data)}`
+    );
   }
 
   @MessagePattern("create-query")
-  async handleMessage(@Payload() createQueryDto: CreateQueryDto) {
-    const response = await fetch("http://extratoclube.com.br/");
-    const html = await response.text();
-    const [, url] = html.match(/<frame src="([A-Za-z0-9:/\-.]+)"/) ?? [];
-    if (!url) throw new Error("no url found");
+  async handleMessage(@Payload() payload: CreateQueryDto & { id: string }) {
+    const { id, ...createQueryDto } = payload;
 
-    const browser = await puppeteer.launch({ headless: "new" });
+    this.logger.log(
+      `${id} Received on create-query queue the data ${JSON.stringify(payload)}`
+    );
 
     try {
-      const page = await browser.newPage();
+      const result = await this.beneficiosProvider.findOne(createQueryDto);
 
-      try {
-        await page.goto(url);
-        await page.waitForSelector("#user");
-        await page.type("#user", createQueryDto.username);
-        await page.waitForSelector("#pass");
-        await page.type("#pass", createQueryDto.password);
-        await page.waitForSelector("#botao");
-
-        try {
-          await Promise.all([
-            page.click("#botao"),
-            page.waitForNavigation({ timeout: 5000 }),
-          ]);
-        } catch (error) {
-          if (error instanceof TimeoutError) {
-            const error = await page.evaluate(
-              () =>
-                document.querySelector<HTMLDivElement>("#alert-1-msg")
-                  ?.innerText
-            );
-
-            if (error) throw new Error(error);
-
-            throw new Error("wait for 5s and #alert-1-msg not found", {
-              cause: error,
-            });
-          }
-
-          throw error;
-        }
-      } finally {
-        page.close();
+      if (result instanceof Error) {
+        const error = result;
+        this.logger.error(JSON.stringify({ id, msg: String(error) }));
+        return;
       }
 
-      console.log("received", createQueryDto);
-    } finally {
-      await browser.close();
+      const { beneficio } = result;
+      this.logger.log(`${id} Nº do benefício: ${beneficio}`);
+    } catch (error) {
+      this.logger.error(error);
     }
   }
 }

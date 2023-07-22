@@ -3,9 +3,10 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ClientProxyFactory, Transport } from "@nestjs/microservices";
 import { AppController } from "./app.controller";
 import { RMQ_SERVICE } from "./tokens";
+import { BeneficiosModule } from "./beneficios/beneficios.module";
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true })],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), BeneficiosModule],
   providers: [
     {
       provide: RMQ_SERVICE,
