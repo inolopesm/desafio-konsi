@@ -17,7 +17,7 @@ export class AppController {
   async handleMessage(@Payload() createQueryDto: CreateQueryDto) {
     const response = await fetch("http://extratoclube.com.br/");
     const html = await response.text();
-    const [, url] = html.match(/<frame src="([A-Za-z0-9:\/\-\.]+)"/) ?? [];
+    const [, url] = html.match(/<frame src="([A-Za-z0-9:/\-.]+)"/) ?? [];
     if (!url) throw new Error("no url found");
 
     const browser = await puppeteer.launch({ headless: "new" });
