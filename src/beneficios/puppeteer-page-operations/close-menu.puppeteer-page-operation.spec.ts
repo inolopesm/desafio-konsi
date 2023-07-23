@@ -2,19 +2,12 @@ import type { Page } from "puppeteer";
 import { CloseMenuPuppeteerPageOperation } from "./close-menu.puppeteer-page-operation";
 
 describe("CloseMenuPuppeteerPageOperation", () => {
-  it("should wait for selector ion-menu", async () => {
+  it("should wait for menu to be visible", async () => {
     const operation = new CloseMenuPuppeteerPageOperation();
-
-    const page = {
-      waitForSelector: jest.fn(),
-      evaluate: jest.fn(),
-    };
-
+    const page = { waitForSelector: jest.fn(), evaluate: jest.fn() };
     await operation.execute(page as unknown as Page, {});
-
-    expect(page.waitForSelector).toHaveBeenCalledWith("ion-menu", {
-      visible: true,
-    });
+    const args = ["ion-menu", { visible: true }] as const;
+    expect(page.waitForSelector).toHaveBeenCalledWith(...args);
   });
 
   it("should click menu backdrop", async () => {
@@ -34,7 +27,7 @@ describe("CloseMenuPuppeteerPageOperation", () => {
 
     const page = {
       waitForSelector: jest.fn(),
-      evaluate: (pageFunction: () => void) => {
+      evaluate: async (pageFunction: () => void) => {
         const window = { document: { querySelector: documentQuerySelector } };
         const bindedPageFunction = pageFunction.bind(window);
         bindedPageFunction();
@@ -47,12 +40,20 @@ describe("CloseMenuPuppeteerPageOperation", () => {
     expect(backdropClick).toHaveBeenCalled();
   });
 
+  it("should return the same data it received", async () => {
+    const operation = new CloseMenuPuppeteerPageOperation();
+    const page = { waitForSelector: jest.fn(), evaluate: jest.fn() };
+    const data = { number: Math.random() };
+    const result = await operation.execute(page as unknown as Page, data);
+    expect(result).toEqual(data);
+  });
+
   it("should throw an error if menu has not found", async () => {
     const operation = new CloseMenuPuppeteerPageOperation();
 
     const page = {
       waitForSelector: jest.fn(),
-      evaluate: (pageFunction: () => void) => {
+      evaluate: async (pageFunction: () => void) => {
         const window = { document: { querySelector: () => null } };
         const bindedPageFunction = pageFunction.bind(window);
         bindedPageFunction();
@@ -68,7 +69,7 @@ describe("CloseMenuPuppeteerPageOperation", () => {
 
     const page = {
       waitForSelector: jest.fn(),
-      evaluate: (pageFunction: () => void) => {
+      evaluate: async (pageFunction: () => void) => {
         const window = {
           document: { querySelector: () => ({ shadowRoot: null }) },
         };
@@ -79,10 +80,8 @@ describe("CloseMenuPuppeteerPageOperation", () => {
     };
 
     const promise = operation.execute(page as unknown as Page, {});
-
-    await expect(promise).rejects.toThrow(
-      new Error("menu doesnt have shadow root")
-    );
+    const error = new Error("menu doesnt have shadow root");
+    await expect(promise).rejects.toThrow(error);
   });
 
   it("should throw an error if backdrop has not found", async () => {
@@ -90,7 +89,7 @@ describe("CloseMenuPuppeteerPageOperation", () => {
 
     const page = {
       waitForSelector: jest.fn(),
-      evaluate: (pageFunction: () => void) => {
+      evaluate: async (pageFunction: () => void) => {
         const window = {
           document: {
             querySelector: () => ({
