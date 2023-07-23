@@ -6,7 +6,8 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint src/**/*.ts --fix",
-    "format": "prettier --write src/**/*.ts"
+    "format": "prettier --write src/**/*.ts",
+    "test": "jest"
   },
   "dependencies": {
     "@nestjs/common": "^10.1.0",
