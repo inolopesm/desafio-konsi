@@ -27,6 +27,8 @@ export class SubmitFormPuppeteerPageOperation
         if (message) throw new PuppeteerPageOperationException(message);
         throw new Error("#alert-2-msg not found", { cause: error });
       }
+
+      throw error;
     }
 
     return data;
