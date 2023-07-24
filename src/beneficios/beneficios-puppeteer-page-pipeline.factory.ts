@@ -10,7 +10,7 @@ import {
   ExtractResultPuppeteerPageOperation,
   RedirectToUrlInsideFramePuppeteerPageOperation,
   SubmitFormPuppeteerPageOperation,
-} from "./puppeteer-page-operations";
+} from "./operations";
 
 interface CreateParams {
   cpf: string;

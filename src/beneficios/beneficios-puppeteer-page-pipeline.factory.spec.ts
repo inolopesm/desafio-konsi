@@ -11,7 +11,7 @@ import {
   RedirectToUrlInsideFramePuppeteerPageOperation,
   SubmitFormPuppeteerPageOperation,
   SubmitLoginFormPuppeteerPageOperation,
-} from "./puppeteer-page-operations";
+} from "./operations";
 
 jest.mock("../puppeteer/puppeteer-page.pipeline");
 
