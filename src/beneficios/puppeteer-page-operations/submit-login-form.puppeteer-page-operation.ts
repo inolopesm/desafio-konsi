@@ -9,10 +9,8 @@ export class SubmitLoginFormPuppeteerPageOperation
     await page.waitForSelector("#botao");
 
     try {
-      await Promise.all([
-        page.click("#botao"),
-        page.waitForNavigation({ timeout: 5000 }),
-      ]);
+      await page.click("#botao");
+      await page.waitForNavigation();
     } catch (error) {
       if (error instanceof TimeoutError) {
         const message = await page.evaluate(function (this: Window) {
