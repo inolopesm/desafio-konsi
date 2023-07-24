@@ -1,9 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { Body, Controller, Inject, Logger, Post } from "@nestjs/common";
 import { ClientProxy, MessagePattern, Payload } from "@nestjs/microservices";
-import { RMQ_SERVICE } from "./tokens";
+import { BeneficiosProvider } from "./beneficios";
 import { CreateQueryDto } from "./create-query.dto";
-import { BeneficiosProvider } from "./beneficios/beneficios.provider";
+import { RMQ_SERVICE } from "./tokens";
 
 @Controller()
 export class AppController {
