@@ -1,6 +1,9 @@
 import type { Page } from "puppeteer";
-import { PuppeteerPageOperation } from "../puppeteer-page-operation.interface";
-import { PuppeteerPageOperationException } from "../puppeteer-page-operation.exception";
+
+import {
+  type PuppeteerPageOperation,
+  PuppeteerPageOperationException,
+} from "../../puppeteer";
 
 export class ExtractResultPuppeteerPageOperation
   implements PuppeteerPageOperation

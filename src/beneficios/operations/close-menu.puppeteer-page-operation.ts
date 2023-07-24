@@ -1,5 +1,5 @@
 import type { Page } from "puppeteer";
-import { PuppeteerPageOperation } from "../puppeteer-page-operation.interface";
+import type { PuppeteerPageOperation } from "../../puppeteer";
 
 export class CloseMenuPuppeteerPageOperation implements PuppeteerPageOperation {
   async execute(page: Page, data: Record<string, unknown>) {

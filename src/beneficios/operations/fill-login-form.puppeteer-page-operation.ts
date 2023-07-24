@@ -1,5 +1,5 @@
 import type { Page } from "puppeteer";
-import type { PuppeteerPageOperation } from "../puppeteer-page-operation.interface";
+import type { PuppeteerPageOperation } from "../../puppeteer";
 
 export class FillLoginFormPuppeteerPageOperation
   implements PuppeteerPageOperation
