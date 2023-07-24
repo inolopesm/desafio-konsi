@@ -1,6 +1,6 @@
 import { Page } from "puppeteer";
 import { ExtractResultPuppeteerPageOperation } from "./extract-result.puppeteer-page-operation";
-import { PuppeteerPageOperationException } from "../puppeteer-page-operation.exception";
+import { PuppeteerPageOperationException } from "../../puppeteer";
 
 describe("ExtractResultPuppeteerPageOperation", () => {
   it("should get the result", async () => {
