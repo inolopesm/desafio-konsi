@@ -6,11 +6,10 @@ export class SubmitFormPuppeteerPageOperation
   implements PuppeteerPageOperation
 {
   async execute(page: Page, data: Record<string, unknown>) {
-    // TODO: try to improve the code below
     await page.evaluate(function (this: Window) {
       const button = Array.from(
         this.document.querySelectorAll<HTMLElement>("ion-button")
-      ).find((el) => el.innerText === "PROCURAR");
+      ).find((element) => element.innerText === "PROCURAR");
 
       if (!button) throw new Error("button not found");
       button.click();
