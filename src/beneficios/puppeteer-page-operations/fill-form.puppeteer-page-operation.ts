@@ -6,7 +6,7 @@ export class FillFormPuppeteerPageOperation implements PuppeteerPageOperation {
 
   async execute(page: Page, data: Record<string, unknown>) {
     await page.waitForSelector('input[name="ion-input-1"]', { visible: true });
-    await page.type('input[name="ion-input-1"]', this.cpf, { delay: 1000 });
+    await page.type('input[name="ion-input-1"]', this.cpf);
     return data;
   }
 }
