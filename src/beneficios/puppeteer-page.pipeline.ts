@@ -2,11 +2,7 @@ import type { Page } from "puppeteer";
 import type { PuppeteerPageOperation } from "./puppeteer-page-operation.interface";
 
 export class PuppeteerPagePipeline {
-  private readonly operations: PuppeteerPageOperation[] = [];
-
-  register(operation: PuppeteerPageOperation) {
-    this.operations.push(operation);
-  }
+  constructor(private readonly operations: PuppeteerPageOperation[]) {}
 
   async invoke(page: Page) {
     let data: Record<string, unknown> = {};

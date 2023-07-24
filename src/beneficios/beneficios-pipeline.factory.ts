@@ -23,21 +23,17 @@ export class BeneficiosPipelineFactory {
   static create(params: CreateParams) {
     const { cpf, username, password } = params;
 
-    const pipeline = new PuppeteerPagePipeline();
-
-    pipeline.register(new RedirectToUrlInsideFramePuppeteerPageOperation());
-
-    pipeline.register(
-      new FillLoginFormPuppeteerPageOperation(username, password)
-    );
-
-    pipeline.register(new SubmitLoginFormPuppeteerPageOperation());
-    pipeline.register(new CloseRecentNewsPuppeteerPageOperation());
-    pipeline.register(new CloseMenuPuppeteerPageOperation());
-    pipeline.register(new OpenAccordeonPuppeteerPageOperation());
-    pipeline.register(new FillFormPuppeteerPageOperation(cpf));
-    pipeline.register(new SubmitFormPuppeteerPageOperation());
-    pipeline.register(new ExtractResultPuppeteerPageOperation());
+    const pipeline = new PuppeteerPagePipeline([
+      new RedirectToUrlInsideFramePuppeteerPageOperation(),
+      new FillLoginFormPuppeteerPageOperation(username, password),
+      new SubmitLoginFormPuppeteerPageOperation(),
+      new CloseRecentNewsPuppeteerPageOperation(),
+      new CloseMenuPuppeteerPageOperation(),
+      new OpenAccordeonPuppeteerPageOperation(),
+      new FillFormPuppeteerPageOperation(cpf),
+      new SubmitFormPuppeteerPageOperation(),
+      new ExtractResultPuppeteerPageOperation(),
+    ]);
 
     return pipeline;
   }
