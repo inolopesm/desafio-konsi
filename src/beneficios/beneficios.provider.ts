@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import puppeteer from "puppeteer";
-import { BeneficiosPipelineFactory } from "./beneficios-pipeline.factory";
+import { BeneficiosPuppeteerPagePipelineFactory } from "./beneficios-puppeteer-page-pipeline.factory";
 import { PuppeteerPageOperationException } from "./puppeteer-page-operation.exception";
 
 interface FindOneParams {
@@ -16,7 +16,7 @@ interface FindOneResult {
 @Injectable()
 export class BeneficiosProvider {
   async findOne(params: FindOneParams): Promise<FindOneResult | Error> {
-    const pipeline = BeneficiosPipelineFactory.create(params);
+    const pipeline = BeneficiosPuppeteerPagePipelineFactory.create(params);
     const browser = await puppeteer.launch({ headless: "new" });
 
     try {

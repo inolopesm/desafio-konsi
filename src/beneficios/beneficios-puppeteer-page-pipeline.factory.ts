@@ -19,7 +19,7 @@ interface CreateParams {
   password: string;
 }
 
-export class BeneficiosPipelineFactory {
+export class BeneficiosPuppeteerPagePipelineFactory {
   static create(params: CreateParams) {
     const { cpf, username, password } = params;
 
