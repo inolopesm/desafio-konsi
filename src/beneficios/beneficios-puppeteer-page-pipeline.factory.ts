@@ -9,9 +9,8 @@ import {
   FillFormPuppeteerPageOperation,
   ExtractResultPuppeteerPageOperation,
   RedirectToUrlInsideFramePuppeteerPageOperation,
+  SubmitFormPuppeteerPageOperation,
 } from "./puppeteer-page-operations";
-
-import { SubmitFormPuppeteerPageOperation } from "./puppeteer-page-operations/submit-form.puppeteer-page-operation";
 
 interface CreateParams {
   cpf: string;

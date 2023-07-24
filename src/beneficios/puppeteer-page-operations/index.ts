@@ -6,3 +6,4 @@ export * from "./open-accordeon.puppeteer-page-operation";
 export * from "./fill-form.puppeteer-page-operation";
 export * from "./extract-result.puppeteer-page-operation";
 export * from "./redirect-to-url-inside-frame.puppeteer-page-operation";
+export * from "./submit-form.puppeteer-page-operation";
