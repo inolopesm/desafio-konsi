@@ -3,5 +3,5 @@
 
 npx eslint src/**/*.ts
 npx prettier --check src/**/*.ts
-npx jest --coverage
+npx jest --runInBand
 npx tsc --noEmit
