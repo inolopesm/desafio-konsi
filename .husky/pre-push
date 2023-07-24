@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npx eslint src/**/*.ts
-npx prettier --check src/**/*.ts
+npx eslint src
+npx prettier --check --log-level=warn src
 npx jest --runInBand
 npx tsc --noEmit
