@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import puppeteer from "puppeteer";
 import { BeneficiosPuppeteerPagePipelineFactory } from "./beneficios-puppeteer-page-pipeline.factory";
-import { PuppeteerPageOperationException } from "./puppeteer-page-operation.exception";
+import { PuppeteerPageOperationException } from "../puppeteer";
 
 interface FindOneParams {
   cpf: string;

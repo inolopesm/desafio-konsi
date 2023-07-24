@@ -1,3 +1,4 @@
+import { PuppeteerPagePipeline } from "../puppeteer";
 import { BeneficiosPuppeteerPagePipelineFactory } from "./beneficios-puppeteer-page-pipeline.factory";
 
 import {
@@ -12,9 +13,7 @@ import {
   SubmitLoginFormPuppeteerPageOperation,
 } from "./puppeteer-page-operations";
 
-import { PuppeteerPagePipeline } from "./puppeteer-page.pipeline";
-
-jest.mock("./puppeteer-page.pipeline");
+jest.mock("../puppeteer/puppeteer-page.pipeline");
 
 describe("BeneficiosPuppeteerPagePipelineFactory", () => {
   it("should call PuppeteerPagePipeline with all operations", () => {

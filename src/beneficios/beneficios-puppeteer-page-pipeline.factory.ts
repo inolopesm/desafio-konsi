@@ -1,4 +1,4 @@
-import { PuppeteerPagePipeline } from "./puppeteer-page.pipeline";
+import { PuppeteerPagePipeline } from "../puppeteer";
 
 import {
   FillLoginFormPuppeteerPageOperation,
