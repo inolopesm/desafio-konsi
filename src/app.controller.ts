@@ -38,7 +38,7 @@ export class AppController {
 
       if (result instanceof Error) {
         const error = result;
-        this.logger.error(JSON.stringify({ id, msg: String(error) }));
+        this.logger.error(`${id} ${error}`);
         return;
       }
 
