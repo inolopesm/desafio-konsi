@@ -1,4 +1,4 @@
-import { Page } from "puppeteer";
+import type { Page } from "puppeteer";
 import { PuppeteerPageOperation } from "../puppeteer-page-operation.interface";
 import { PuppeteerPageOperationException } from "../puppeteer-page-operation.exception";
 
