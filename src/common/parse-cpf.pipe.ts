@@ -7,7 +7,7 @@ export class ParseCPFPipe implements PipeTransform<string> {
       throw new BadRequestException("The value passed as CPF is not a string");
     }
 
-    const isCpf = (value: string) => /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(value);
+    const isCpf = (str: string) => /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(str);
 
     if (!isCpf(value)) {
       throw new BadRequestException("Validation failed (cpf is expected)");

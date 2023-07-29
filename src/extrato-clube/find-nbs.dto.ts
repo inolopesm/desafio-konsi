@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsString, Matches } from "class-validator";
 
-export class CreateQueryDto {
+/** Find Números dos Benefícios (NBs) DTO */
+export class FindNBsDto {
   @Matches(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/)
   @IsString()
   readonly cpf!: string;

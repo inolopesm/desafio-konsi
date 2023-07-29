@@ -1,3 +1,5 @@
+import { HttpClientError } from "./http-client.error";
+
 export class HttpClient {
   static async request<T>(
     input: RequestInfo | URL,
@@ -10,10 +12,10 @@ export class HttpClient {
 
     if (!response.ok) {
       if (typeof data?.message === "string") {
-        throw new Error(data.message);
+        throw new HttpClientError(data.message);
       }
 
-      throw new Error(`Erro inesperado (${response.status})`);
+      throw new HttpClientError(`Unexpected error (${response.status})`);
     }
 
     return { headers: response.headers, data };
