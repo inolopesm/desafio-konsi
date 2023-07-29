@@ -1,11 +1,24 @@
 import { randomUUID } from "node:crypto";
-import { Body, Controller, Inject, Logger, Post } from "@nestjs/common";
-import { ClientProxy, MessagePattern, Payload } from "@nestjs/microservices";
-import { BeneficiosProvider } from "./beneficios";
-import { CreateQueryDto } from "./create-query.dto";
-import { RMQ_SERVICE } from "./tokens";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
+
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Logger,
+  Param,
+  Post,
+} from "@nestjs/common";
+
+import { ElasticsearchService } from "@nestjs/elasticsearch";
+import { ClientProxy, MessagePattern, Payload } from "@nestjs/microservices";
 import { Cache } from "cache-manager";
+
+import { CreateQueryDto } from "./create-query.dto";
+import { HttpClient } from "./http.client";
+import { ParseCPFPipe } from "./parse-cpf.pipe";
+import { RMQ_SERVICE } from "./tokens";
 
 @Controller()
 export class AppController {
@@ -14,10 +27,10 @@ export class AppController {
   constructor(
     @Inject(RMQ_SERVICE) private readonly client: ClientProxy,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private readonly beneficiosProvider: BeneficiosProvider
+    private readonly elasticsearchService: ElasticsearchService
   ) {}
 
-  @Post("query")
+  @Post("api/beneficios")
   send(@Body() createQueryDto: CreateQueryDto) {
     const id = randomUUID();
     const data = { ...createQueryDto, id };
@@ -41,26 +54,62 @@ export class AppController {
 
     if (cacheValue) {
       this.logger.log(`${id} Result found in cache`);
-      this.logger.log(`${id} Nº do benefício: ${cacheValue}`);
+      this.logger.log(`${id} Números dos benefícios: ${cacheValue}`);
       return;
     }
 
-    try {
-      const result = await this.beneficiosProvider.findOne(createQueryDto);
+    const { cpf, login, senha } = createQueryDto;
 
-      if (result instanceof Error) {
-        const error = result;
-        this.logger.error(`${id} ${error}`);
-        return;
+    try {
+      const baseUrl =
+        "http://extratoblubeapp-env.eba-mvegshhd.sa-east-1.elasticbeanstalk.com";
+
+      const { headers } = await HttpClient.request(`${baseUrl}/login`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ login, senha }),
+      });
+
+      const authorization = headers.get("Authorization");
+      if (!authorization) throw new Error("Authorization not found");
+
+      const { data } = await HttpClient.request<{
+        beneficios: Array<{ nb: string }>;
+      }>(`${baseUrl}/offline/listagem/${cpf}`, { headers: { authorization } });
+
+      const beneficios = new Array<string>();
+
+      for (const beneficio of data.beneficios) {
+        if (beneficio.nb === "Matrícula não encontrada!") {
+          this.logger.log(`${id} Benefícios not found in external api`);
+          break;
+        }
+
+        beneficios.push(beneficio.nb);
       }
 
-      const { beneficio } = result;
+      await this.cacheManager.set(cacheKey, beneficios, 1000 * 60 * 60 * 24);
 
-      await this.cacheManager.set(cacheKey, beneficio, 1000 * 60 * 60 * 24);
+      if (beneficios.length) {
+        await this.elasticsearchService.index({
+          index: "konsi",
+          document: { cpf, beneficios, createdAt: Date.now() },
+        });
+      }
 
-      this.logger.log(`${id} Nº do benefício: ${beneficio}`);
+      this.logger.log(`${id} Números dos benefícios: ${beneficios}`);
     } catch (error) {
       this.logger.error(error);
     }
+  }
+
+  @Get("/api/beneficios/:cpf")
+  async read(@Param("cpf", ParseCPFPipe) cpf: string) {
+    const result = await this.elasticsearchService.search({
+      index: "konsi",
+      query: { match: { cpf } },
+    });
+
+    return result.hits.hits;
   }
 }

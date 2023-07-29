@@ -1,11 +1,12 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { ClientProxyFactory, Transport } from "@nestjs/microservices";
-import { BeneficiosModule } from "./beneficios";
-import { AppController } from "./app.controller";
-import { RMQ_SERVICE } from "./tokens";
 import { CacheModule } from "@nestjs/cache-manager";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ElasticsearchModule } from "@nestjs/elasticsearch";
+import { ClientProxyFactory, Transport } from "@nestjs/microservices";
+import { AppController } from "./app.controller";
+import { BeneficiosModule } from "./beneficios";
 import { RedisCacheStore } from "./redis.cache-store";
+import { RMQ_SERVICE } from "./tokens";
 
 @Module({
   imports: [
@@ -19,6 +20,12 @@ import { RedisCacheStore } from "./redis.cache-store";
         await redisCacheStore.connect(url);
         return { store: redisCacheStore };
       },
+    }),
+    ElasticsearchModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        node: configService.getOrThrow("ELASTICSEARCH_URL"),
+      }),
     }),
     BeneficiosModule,
   ],
