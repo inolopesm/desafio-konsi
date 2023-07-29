@@ -1,5 +1,13 @@
 import { randomUUID } from "node:crypto";
-import { Body, Controller, Inject, Logger, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Logger,
+  Param,
+  Post,
+} from "@nestjs/common";
 import { ElasticsearchService } from "@nestjs/elasticsearch";
 import { firstValueFrom } from "rxjs";
 
@@ -14,6 +22,7 @@ import { RedisService } from "../redis";
 import { ExtratoClubeService, FindNBsResult } from "./extrato-clube.service";
 import { FindNBsDto } from "./find-nbs.dto";
 import { FindNBDto } from "./find-nb.dto";
+import { ParseCPFPipe } from "../common";
 
 type WithId<T> = T & { id: string };
 
@@ -27,6 +36,16 @@ export class ExtratoClubeController {
     private readonly redis: RedisService,
     private readonly service: ExtratoClubeService
   ) {}
+
+  @Get("api/extrato-clube/v1/:cpf")
+  async findOne(@Param("cpf", ParseCPFPipe) cpf: string) {
+    const result = await this.elasticSearch.search({
+      index: "konsi",
+      query: { match: { cpf } },
+    });
+
+    return result.hits.hits;
+  }
 
   /** [SENDER] Find Números de Benefícios (NBs) */
   @Post("api/extrato-clube/v2")
