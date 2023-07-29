@@ -18,7 +18,7 @@ import { Cache } from "cache-manager";
 import { CreateQueryDto } from "./create-query.dto";
 import { HttpClient } from "./http.client";
 import { ParseCPFPipe } from "./parse-cpf.pipe";
-import { RMQ_SERVICE } from "./tokens";
+import { RMQ_SERVICE } from "./app.constants";
 
 @Controller()
 export class AppController {

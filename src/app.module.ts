@@ -6,7 +6,7 @@ import { ClientProxyFactory, Transport } from "@nestjs/microservices";
 import { AppController } from "./app.controller";
 import { BeneficiosModule } from "./beneficios";
 import { RedisCacheStore } from "./redis.cache-store";
-import { RMQ_SERVICE } from "./tokens";
+import { RMQ_SERVICE } from "./app.constants";
 
 @Module({
   imports: [
