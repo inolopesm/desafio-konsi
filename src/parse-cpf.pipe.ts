@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, PipeTransform } from "@nestjs/common";
 
 @Injectable()
 export class ParseCPFPipe implements PipeTransform<string> {
-  async transform(value: string): Promise<string> {
+  async transform(value: unknown): Promise<string> {
     if (typeof value !== "string") {
       throw new BadRequestException("The value passed as CPF is not a string");
     }
