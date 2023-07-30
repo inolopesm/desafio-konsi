@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:18.17.0-alpine
 
 RUN apk add dumb-init
 
@@ -24,6 +24,12 @@ RUN npm prune --omit=dev
 ENV PORT=3000
 ENV NODE_ENV=production
 ENV NO_COLOR=1
+
+# If you need this script, override command (cmd)
+# examples:
+# - docker run [name]:[tag] sh -c "node create-es-index.js && npm run start:prod"
+# - docker-compose.yml -> sh -c "node create-es-index.js && npm run start:prod"
+COPY --chown=node:node create-es-index.js .
 
 EXPOSE 3000
 
