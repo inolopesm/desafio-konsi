@@ -1,0 +1,31 @@
+services:
+  web:
+    build: .
+    command: sh -c "node create-es-index.js && npm run start:prod"
+    ports:
+      - 3000:3000
+    environment:
+      - RMQ_URL=amqp://rabbitmq:5672
+      - RMQ_QUEUE=konsi
+      - REDIS_URL=redis://redis:6379
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      - rabbitmq
+      - redis
+      - elasticsearch
+  rabbitmq:
+    image: rabbitmq:3.12.2
+    ports:
+      - 5672:5672
+  redis:
+    image: redis:7.0.12
+    ports:
+      - 6379:6379
+  elasticsearch:
+    image: elasticsearch:8.8.1
+    ports:
+      - 9200:9200
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - network.host=0.0.0.0
