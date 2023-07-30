@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div class="container mx-auto py-5">
+    <h1 class="text-2xl text-center mb-4">Desafio Konsi</h1>
+    <form
+      class="bg-gray-100 flex items-center rounded border border-gray-200 mb-4"
+      method="get"
+    >
+      <input
+        class="w-full bg-gray-50 py-2 px-4 border-r"
+        type="search"
+        name="cpf"
+        placeholder="CPF (000.000.000-00)"
+        required
+      />
+      <button class="py-2 px-4 transition hover:bg-gray-200" type="submit">Pesquisar</button>
+    </form>
+
+    <div
+      class="bg-red-400 border border-red-500 px-4 py-2 rounded hidden"
+      id="error"
+    ></div>
+
+    <div id="success"></div>
+  </div>
+
+  <script>
+    async function handleSubmit(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const cpf = formData.get("cpf");
+      const response = await fetch(`/api/extrato-clube/v1/${cpf}`);
+      const contentType = response.headers.get("content-type");
+      const json = contentType ? contentType.indexOf("json") !== -1 : false;
+      const data = json ? await response.json() : null;
+
+      successContainer.innerHTML = "";
+      errorContainer.classList.add("hidden");
+
+      if (!response.ok) {
+        if (typeof data?.message === "string") {
+          errorContainer.classList.remove("hidden");
+          errorContainer.innerText = data.message;
+          return;
+        }
+
+        errorContainer.classList.remove("hidden");
+        errorContainer.innerText = `Unexpected error: ${response.status}`;
+        return;
+      }
+
+      const h2 = document.createElement("h2");
+      h2.classList.add("text-xl", "mb-2");
+      h2.innerText = "Números dos benefícios";
+      successContainer.appendChild(h2);
+
+      const ul = document.createElement("ul");
+      ul.classList.add("list-disc", "pl-5");
+      successContainer.appendChild(ul);
+
+      const listFormat = new Intl.ListFormat("pt-br");
+
+      for (const hit of data) {
+        const li = document.createElement("li");
+        li.innerText = listFormat.format(hit.nbs);
+        ul.appendChild(li);
+      }
+    }
+
+    const errorContainer = window.document.querySelector("#error");
+    const successContainer = window.document.querySelector("#success");
+
+    window
+      .document
+      .querySelector("form")
+      .addEventListener("submit", handleSubmit);
+  </script>
+</body>
+</html>

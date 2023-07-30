@@ -1,4 +1,10 @@
 import { randomUUID } from "node:crypto";
+import { createReadStream } from "node:fs";
+import { resolve } from "node:path";
+import { ElasticsearchService } from "@nestjs/elasticsearch";
+import type { FastifyReply } from "fastify";
+import { firstValueFrom } from "rxjs";
+
 import {
   Body,
   Controller,
@@ -7,9 +13,8 @@ import {
   Logger,
   Param,
   Post,
+  Res,
 } from "@nestjs/common";
-import { ElasticsearchService } from "@nestjs/elasticsearch";
-import { firstValueFrom } from "rxjs";
 
 import {
   MessagePattern,
@@ -37,6 +42,17 @@ export class ExtratoClubeController {
     private readonly service: ExtratoClubeService
   ) {}
 
+  @Get("extrato-clube")
+  async render(@Res() reply: FastifyReply) {
+    const stream = createReadStream(
+      resolve(__dirname, "..", "..", "views", "extrato-clube", "page.html"),
+      "utf-8"
+    );
+
+    reply.type("text/html");
+    reply.send(stream);
+  }
+
   @Get("api/extrato-clube/v1/:cpf")
   async findOne(@Param("cpf", ParseCPFPipe) cpf: string) {
     const result = await this.elasticSearch.search({
@@ -44,7 +60,7 @@ export class ExtratoClubeController {
       query: { match: { cpf } },
     });
 
-    return result.hits.hits;
+    return result.hits.hits.map(({ _source }) => _source);
   }
 
   /** [SENDER] Find Números de Benefícios (NBs) */
