@@ -14,8 +14,8 @@ RUN npm ci
 
 COPY --chown=node:node nest-cli.json .
 COPY --chown=node:node tsconfig*.json .
-COPY --chown=node:node src/ .
-COPY --chown=node:node views/ .
+COPY --chown=node:node src/ ./src/
+COPY --chown=node:node views/ ./views/
 
 RUN npm run build
 
