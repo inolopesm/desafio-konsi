@@ -44,3 +44,12 @@ ou
   - `docker compose up redis -d`
   - `docker compose up elasticsearch -d`
 - Inicie a aplicação em modo de desenvolvimento: `npm run start:dev`
+
+## Mais informações
+
+### Rotas
+
+- [Depreciada] ~~Buscar número do benefício via puppeteer: `POST /api/extrato-clube/v1/:cpf`~~
+- Buscar números dos benefícios via api: `POST /api/extrato-clube/v2/:cpf`
+- Exibir resultados das buscas via api: `GET /api/extrato-clube/v1/:cpf`
+- Exibir resultados das buscas via página web `GET /extrato-clube`
