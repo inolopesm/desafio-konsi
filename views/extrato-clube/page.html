@@ -6,7 +6,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <title>Desafio Konsi</title>
 </head>
-<body>
+<body class="bg-gray-50">
   <div class="container mx-auto py-5">
     <h1 class="text-2xl text-center mb-4">Desafio Konsi</h1>
     <form
@@ -18,9 +18,15 @@
         type="search"
         name="cpf"
         placeholder="CPF (000.000.000-00)"
+        inputmode="numeric"
         required
       />
-      <button class="py-2 px-4 transition hover:bg-gray-200" type="submit">Pesquisar</button>
+      <button
+        class="py-2 px-4 transition hover:bg-gray-300"
+        type="submit"
+      >
+        Pesquisar
+      </button>
     </form>
 
     <div
