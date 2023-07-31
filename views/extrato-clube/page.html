@@ -10,11 +10,11 @@
   <div class="container mx-auto py-5">
     <h1 class="text-2xl text-center mb-4">Desafio Konsi</h1>
     <form
-      class="bg-gray-100 flex items-center rounded border border-gray-200 mb-4"
+      class="bg-gray-200 flex items-center rounded border border-gray-300 mb-4"
       method="get"
     >
       <input
-        class="w-full bg-gray-50 py-2 px-4 border-r"
+        class="w-full bg-gray-100 py-2 px-4 border-r"
         type="search"
         name="cpf"
         placeholder="CPF (000.000.000-00)"
@@ -32,18 +32,30 @@
   </div>
 
   <script>
+    function isCpf(string) {
+      const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+      return cpfRegex.test(string);
+    }
+
     async function handleSubmit(event) {
       event.preventDefault();
 
+      successContainer.innerHTML = "";
+      errorContainer.classList.add("hidden");
+
       const formData = new FormData(event.target);
       const cpf = formData.get("cpf");
+
+      if (!isCpf(cpf)) {
+        errorContainer.classList.remove("hidden");
+        errorContainer.innerText = "CPF inválido! Dica: siga o formato 000.000.000-00";
+        return;
+      }
+
       const response = await fetch(`/api/extrato-clube/v1/${cpf}`);
       const contentType = response.headers.get("content-type");
       const json = contentType ? contentType.indexOf("json") !== -1 : false;
       const data = json ? await response.json() : null;
-
-      successContainer.innerHTML = "";
-      errorContainer.classList.add("hidden");
 
       if (!response.ok) {
         if (typeof data?.message === "string") {
